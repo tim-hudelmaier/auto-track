@@ -11,6 +11,8 @@ python = "^3.11"
 numpy = "^1.26.4"
 pandas = "^2.2.2"
 torch = "^2.2.2"
+pytest = "^8.1.1"
+black = "^24.4.0"
 
 
 [build-system]
