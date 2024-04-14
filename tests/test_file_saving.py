@@ -35,6 +35,32 @@ def test_save_object(tmp_path):
         save_object(set([1, 2, 3]), tmp_path / "set.json")
 
 
+def test_save_obj_without_suffix(tmp_path):
+    d = {"a": 1, "b": 2}
+    save_object(d, tmp_path / "dict")
+    assert (tmp_path / "dict.json").exists()
+
+    l = [1, 2, 3]
+    save_object(l, tmp_path / "list")
+    assert (tmp_path / "list.json").exists()
+
+    arr = np.array([1, 2, 3])
+    save_object(arr, tmp_path / "array")
+    assert (tmp_path / "array.npy").exists()
+
+    df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+    save_object(df, tmp_path / "df")
+    assert (tmp_path / "df.csv").exists()
+
+    s = pd.Series([1, 2, 3])
+    save_object(s, tmp_path / "series")
+    assert (tmp_path / "series.csv").exists()
+
+    tensor = torch.tensor([1, 2, 3])
+    save_object(tensor, tmp_path / "tensor")
+    assert (tmp_path / "tensor.pt").exists()
+
+
 def test_save_iterable_types(tmp_path):
     d = {"a": np.array([1, 2, 3]), "b": np.array([4, 5, 6])}
     save_iterable_types(d, tmp_path / "dict")

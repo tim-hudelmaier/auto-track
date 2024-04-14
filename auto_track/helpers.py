@@ -24,14 +24,23 @@ def save_object(obj, path: Path):
         path: Path to save the object
     """
     path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not path.suffix:
+        if isinstance(obj, (list, tuple, dict)):
+            path = path.with_suffix(".json")
+        elif isinstance(obj, np.ndarray):
+            path = path.with_suffix(".npy")
+        elif isinstance(obj, (pd.DataFrame, pd.Series)):
+            path = path.with_suffix(".csv")
+        elif isinstance(obj, torch.Tensor):
+            path = path.with_suffix(".pt")
+
     if isinstance(obj, (list, tuple, dict)):
         save_iterable_types(obj, path)
     elif isinstance(obj, np.ndarray):
         np.save(path, obj)
-    elif isinstance(obj, pd.DataFrame):
+    elif isinstance(obj, (pd.DataFrame, pd.Series)):
         obj.to_csv(path, index=False)
-    elif isinstance(obj, pd.Series):
-        obj.to_csv(path)
     elif isinstance(obj, torch.Tensor):
         torch.save(obj, path)
     else:
