@@ -9,7 +9,7 @@ def track(root: Path = None, output_names: Tuple[str] | str = None):
     """
     Decorator to save the output of a function to a file.
 
-    The function must have a return type annotation. The output will be saved to a dicrectory with the same name as the function.
+    The output will be saved to a dicrectory with the same name as the function.
     """
     def inner(func):
         @functools.wraps(func)
