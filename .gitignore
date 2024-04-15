@@ -3,3 +3,4 @@ tests/__pycache__/
 tests/.___pycache__
 ._*
 .python-version
+.vscode/settings.json
