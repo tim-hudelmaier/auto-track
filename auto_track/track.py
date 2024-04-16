@@ -31,10 +31,8 @@ def track(
 
             at_config = kwargs.get("at_config", None)
             branch_name = get_data_branch(at_config, root, func.__name__)
-            print(branch_name)
 
             path = path / branch_name
-            print(path)
 
             if isinstance(outputs, tuple):
                 if len(output_names) != len(outputs):
