@@ -11,7 +11,7 @@ def test_single_output(tmpdir):
         return ['single output']
 
     assert single_output_func() == ['single output']
-    assert os.path.exists(tmpdir / 'single_output_func' / 'output.json')
+    assert os.path.exists(tmpdir / 'single_output_func' / 'main' / 'output.json')
 
 
 def test_multiple_outputs(tmpdir):
@@ -20,8 +20,8 @@ def test_multiple_outputs(tmpdir):
         return ['output 1'], ['output 2']
 
     assert multiple_outputs_func() == (['output 1'], ['output 2'])
-    assert os.path.exists(tmpdir / 'multiple_outputs_func' / 'output1.json')
-    assert os.path.exists(tmpdir / 'multiple_outputs_func' / 'output2.json')
+    assert os.path.exists(tmpdir / 'multiple_outputs_func' / 'main' / 'output1.json')
+    assert os.path.exists(tmpdir / 'multiple_outputs_func' / 'main' / 'output2.json')
 
 
 def test_get_output_path(tmpdir):

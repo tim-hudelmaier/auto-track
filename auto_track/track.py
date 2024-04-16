@@ -25,6 +25,13 @@ def track(root, dataset_name: str = None, output_names: Tuple[str] | str = None)
             else:
                 path = get_output_path(dataset_name, root)
 
+            at_config = kwargs.get('at_config', None)
+            branch_name = get_data_branch(at_config, root, func.__name__)
+            print(branch_name)
+
+            path = path / branch_name
+            print(path)
+
             if isinstance(outputs, tuple):
                 if len(output_names) != len(outputs):
                         raise ValueError(f"Number of output names ({len(output_names)}) must match number of outputs ({len(outputs)}).")
