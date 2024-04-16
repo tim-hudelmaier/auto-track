@@ -166,11 +166,11 @@ def get_function_version(func: callable, root: Path) -> str:
     func_defaults_str = str(func.__defaults__)
     func_patch = func_constants + func_defaults_str
 
-    with FunctionDatabase(root) as fn_lookup:
-        if fn_lookup.get(func.__name__, None) is None:
+    with FunctionDatabase(root) as db:
+        if db.lookup.get(func.__name__, None) is None:
             logger.info("Function is not yet in database. Starting with version 0.0.0")
 
-            fn_lookup[func.__name__] = {
+            db.lookup[func.__name__] = {
                 "__last_versions": [str(signature)],
                 str(signature): {
                     "__last_versions": [func_code],
@@ -188,7 +188,7 @@ def get_function_version(func: callable, root: Path) -> str:
 
         same_major = [
             _signature
-            for _signature in fn_lookup[func.__name__].keys()
+            for _signature in db.lookup[func.__name__].keys()
             if _signature != "__last_versions" and _signature == str(signature)
         ]
 
@@ -197,8 +197,8 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Multiple functions with the same signature found in the database."
             )
         elif len(same_major) == 0:
-            last_version_signature = fn_lookup[func.__name__]["__last_versions"][-1]
-            last_version_major = len(fn_lookup[func.__name__]["__last_versions"]) - 1
+            last_version_signature = db.lookup[func.__name__]["__last_versions"][-1]
+            last_version_major = len(db.lookup[func.__name__]["__last_versions"]) - 1
             new_version = f"{last_version_major + 1}.0.0"
 
             logger.info(
@@ -212,7 +212,7 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Describe the changes made for automatic documentation: "
             )
 
-            fn_lookup[func.__name__][str(signature)] = {
+            db.lookup[func.__name__][str(signature)] = {
                 "__last_versions": [func_code],
                 func_code: {
                     "__last_versions": [func_patch],
@@ -224,10 +224,10 @@ def get_function_version(func: callable, root: Path) -> str:
                 },
             }
 
-            if fn_lookup[func.__name__].get("__last_versions", None) is None:
-                fn_lookup[func.__name__]["__last_versions"] = [str(signature)]
+            if db.lookup[func.__name__].get("__last_versions", None) is None:
+                db.lookup[func.__name__]["__last_versions"] = [str(signature)]
             else:
-                fn_lookup[func.__name__]["__last_versions"].append(str(signature))
+                db.lookup[func.__name__]["__last_versions"].append(str(signature))
 
             return new_version
         else:
@@ -235,7 +235,7 @@ def get_function_version(func: callable, root: Path) -> str:
 
         same_minor = [
             code
-            for code in fn_lookup[func.__name__][last_fn_signature].keys()
+            for code in db.lookup[func.__name__][last_fn_signature].keys()
             if code == func_code and code != "__last_versions"
         ]
 
@@ -244,18 +244,18 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Multiple function entries with the same code found in the database."
             )
         elif len(same_minor) == 0:
-            last_version_code = fn_lookup[func.__name__][last_fn_signature][
+            last_version_code = db.lookup[func.__name__][last_fn_signature][
                 "__last_versions"
             ][-1]
             last_version_minor = (
-                len(fn_lookup[func.__name__][last_fn_signature]["__last_versions"]) - 1
+                len(db.lookup[func.__name__][last_fn_signature]["__last_versions"]) - 1
             )
-            last_version_major = fn_lookup[func.__name__]["__last_versions"].index(
+            last_version_major = db.lookup[func.__name__]["__last_versions"].index(
                 last_fn_signature
             )
             last_version_patch = (
                 len(
-                    fn_lookup[func.__name__][last_fn_signature][last_version_code][
+                    db.lookup[func.__name__][last_fn_signature][last_version_code][
                         "__last_versions"
                     ]
                 )
@@ -271,7 +271,7 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Describe the changes made for automatic documentation: "
             )
 
-            fn_lookup[func.__name__][last_fn_signature][func_code] = {
+            db.lookup[func.__name__][last_fn_signature][func_code] = {
                 "__last_versions": [func_patch],
                 func_patch: {
                     "version": f"{last_version_major}.{last_version_minor + 1}.0",
@@ -280,7 +280,7 @@ def get_function_version(func: callable, root: Path) -> str:
                 },
             }
 
-            fn_lookup[func.__name__][last_fn_signature]["__last_versions"].append(
+            db.lookup[func.__name__][last_fn_signature]["__last_versions"].append(
                 func_code
             )
 
@@ -290,7 +290,7 @@ def get_function_version(func: callable, root: Path) -> str:
 
         same_patch = [
             _patch
-            for _patch in fn_lookup[func.__name__][last_fn_signature][
+            for _patch in db.lookup[func.__name__][last_fn_signature][
                 last_fn_code
             ].keys()
             if _patch == func_patch and _patch != "__last_versions"
@@ -301,16 +301,16 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Multiple function entries with the same constants and defaults found in the database."
             )
         elif len(same_patch) == 0:
-            last_version_const_defaults = fn_lookup[func.__name__][last_fn_signature][
+            last_version_const_defaults = db.lookup[func.__name__][last_fn_signature][
                 last_fn_code
             ]["__last_versions"][-1]
-            last_version_minor = fn_lookup[func.__name__][last_fn_signature][
+            last_version_minor = db.lookup[func.__name__][last_fn_signature][
                 "__last_versions"
             ].index(last_fn_code)
-            last_version_major = fn_lookup[func.__name__]["__last_versions"].index(
+            last_version_major = db.lookup[func.__name__]["__last_versions"].index(
                 last_fn_signature
             )
-            last_version_patch = fn_lookup[func.__name__][last_fn_signature][
+            last_version_patch = db.lookup[func.__name__][last_fn_signature][
                 last_fn_code
             ][last_version_const_defaults]["version"][-1]
             last_version_patch = int(last_version_patch)
@@ -328,13 +328,13 @@ def get_function_version(func: callable, root: Path) -> str:
                 "Describe the changes made for automatic documentation: "
             )
 
-            fn_lookup[func.__name__][last_fn_signature][last_fn_code][func_patch] = {
+            db.lookup[func.__name__][last_fn_signature][last_fn_code][func_patch] = {
                 "version": f"{last_version_major}.{last_version_minor}.{last_version_patch + 1}",
                 "docs": func.__doc__,
                 "change_msg": change_msg,
             }
 
-            fn_lookup[func.__name__][last_fn_signature][last_fn_code][
+            db.lookup[func.__name__][last_fn_signature][last_fn_code][
                 "__last_versions"
             ].append(func_patch)
 
@@ -363,9 +363,24 @@ class FunctionDatabase(object):
         with open(self.path, "r") as f:
             self.lookup = json.load(f)
 
-        return self.lookup
+        return self
 
     def __exit__(self, *args):
         with open(self.path, "w") as f:
             json.dump(self.lookup, f)
         self.lookup = None
+
+    def get_func_versions(self, func_name: str) -> dict:
+        return self._get_all_versions(self.lookup[func_name])
+
+    def _get_all_versions(self, func_lookup: dict) -> int:
+        all_versions = []
+
+        if isinstance(func_lookup, dict):
+            for key, value in func_lookup.items():
+                if key != "__last_versions":
+                    all_versions += self._get_all_versions(value)
+                if func_lookup.get("version", None) is not None:
+                    return [func_lookup["version"]]
+
+        return all_versions

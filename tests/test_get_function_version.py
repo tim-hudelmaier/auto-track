@@ -1,6 +1,6 @@
 import json
 
-from auto_track.track import get_function_version
+from auto_track.track import get_function_version, FunctionDatabase
 
 
 def test_get_function_version(tmp_path, monkeypatch):
@@ -51,3 +51,13 @@ def test_get_function_version(tmp_path, monkeypatch):
         return a + b + c + d
 
     assert get_function_version(func=func2, root=tmp_path) == "0.0.0"
+
+    with FunctionDatabase(root=tmp_path) as db:
+        assert db.get_func_versions("func") == [
+            "0.0.0",
+            "1.0.0",
+            "1.0.1",
+            "1.0.2",
+            "1.1.0",
+            "1.1.1",
+        ]
