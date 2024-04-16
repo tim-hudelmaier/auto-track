@@ -54,7 +54,7 @@ def save_iterable_types(obj: list | dict | tuple, path: Path):
 
     Iterables only consisting of internal python types (str, int, float, bool, list, dict, tuple)
         are stored as json files.
-    
+
     If the object contains external types (np.ndarray, pd.DataFrame, torch.Tensor) and only one type,
         the objects is stored in the corresponding format in a subdirectory. With each file named after
         the key or index of the object.
@@ -74,9 +74,14 @@ def save_iterable_types(obj: list | dict | tuple, path: Path):
             json.dump(obj, f)
     elif isinstance(obj, dict):
         value_types = {type(value) for value in obj.values()}
-        contains_external_types = any(value_type in [np.ndarray, pd.DataFrame, pd.Series, torch.Tensor] for value_type in value_types)
+        contains_external_types = any(
+            value_type in [np.ndarray, pd.DataFrame, pd.Series, torch.Tensor]
+            for value_type in value_types
+        )
         if len(value_types) != 1 and contains_external_types:
-            raise ValueError(f"Values in the dictionary are not of the same type: {value_types}")
+            raise ValueError(
+                f"Values in the dictionary are not of the same type: {value_types}"
+            )
         value_type = value_types.pop()
         if value_type == np.ndarray:
             for key, value in obj.items():
@@ -92,9 +97,14 @@ def save_iterable_types(obj: list | dict | tuple, path: Path):
                 torch.save(value, p)
     elif isinstance(obj, (list, tuple)):
         value_types = {type(value) for value in obj}
-        contains_external_types = any(value_type in [np.ndarray, pd.DataFrame, pd.Series, torch.Tensor] for value_type in value_types)
+        contains_external_types = any(
+            value_type in [np.ndarray, pd.DataFrame, pd.Series, torch.Tensor]
+            for value_type in value_types
+        )
         if len(value_types) != 1 and contains_external_types:
-            raise ValueError(f"Values in the dictionary are not of the same type: {value_types}")
+            raise ValueError(
+                f"Values in the dictionary are not of the same type: {value_types}"
+            )
         value_type = value_types.pop()
         if value_type == np.ndarray:
             for idx, value in enumerate(obj):
@@ -109,7 +119,9 @@ def save_iterable_types(obj: list | dict | tuple, path: Path):
                 p = _get_nested_obj_dir(path, str(idx), "item_", ".pt")
                 torch.save(value, p)
     else:
-        raise ValueError(f"Object type {type(obj)} is currently not supported for automatic saving.")
+        raise ValueError(
+            f"Object type {type(obj)} is currently not supported for automatic saving."
+        )
 
 
 def _python_internal_types_only(d: list | dict | tuple) -> bool:
@@ -137,7 +149,7 @@ def _python_internal_types_only(d: list | dict | tuple) -> bool:
                 _ = _python_internal_types_only(value)
             elif not isinstance(value, internal_types):
                 return False
-    
+
     return True
 
 

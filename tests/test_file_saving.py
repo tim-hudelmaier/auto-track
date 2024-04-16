@@ -3,7 +3,12 @@ import numpy as np
 import pandas as pd
 import torch
 from pathlib import Path
-from auto_track.helpers import save_object, save_iterable_types, _python_internal_types_only, _get_nested_obj_dir
+from auto_track.helpers import (
+    save_object,
+    save_iterable_types,
+    _python_internal_types_only,
+    _get_nested_obj_dir,
+)
 
 
 def test_save_object(tmp_path):
