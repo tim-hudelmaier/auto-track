@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import functools
 import json
 from pathlib import Path
-import sqlite3
 import uuid
 
 from loguru import logger

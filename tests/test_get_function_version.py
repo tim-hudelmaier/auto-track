@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from auto_track.track import get_function_version
 
