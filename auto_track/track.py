@@ -9,7 +9,7 @@ from loguru import logger
 from auto_track.helpers import save_object
 
 
-def track(root, dataset_name: str = None, output_names: Tuple[str] | str = None):
+def track(root, dataset_name: str | None = None, output_names: Tuple[str] | str | None = None):
     """
     Decorator to save the output of a function to a file.
 
@@ -88,8 +88,8 @@ def get_data_branch(at_config: dict | None, root: Path, func_name: str) -> str:
     if func_db is None:
         # no branches have been stored yet for this function
         if query_branch_name is None:
-            query_branch_name = uuid.uuid4()
-            logger.warning(f"No branch name specified in config for {func_name}. Generated branch name: {branch_name}")
+            query_branch_name = str(uuid.uuid4())
+            logger.warning(f"No branch name specified in config for {func_name}. Generated branch name: {query_branch_name}")
         
         lookup[func_name] = {str(query_config): query_branch_name}
         with open(db_path, 'w') as f:
@@ -103,18 +103,13 @@ def get_data_branch(at_config: dict | None, root: Path, func_name: str) -> str:
         if db_branch_name is None:
             # no branch has been stored yet for this config
             if query_branch_name is None:
-                branch_name = uuid.uuid4()
-                logger.warning(f"No branch name specified in config for {func_name}. Generated branch name: {branch_name}")
+                query_branch_name = str(uuid.uuid4())
+                logger.warning(f"No branch name specified in config for {func_name}. Generated branch name: {query_branch_name}")
 
-                lookup[func_name][str(query_config)] = branch_name
-                with open(db_path, 'w') as f:
-                    json.dump(lookup, f)
-                return branch_name
-            else:
-                lookup[func_name][str(query_config)] = query_branch_name
-                with open(db_path, 'w') as f:
-                    json.dump(lookup, f)
-                return query_branch_name
+            lookup[func_name][str(query_config)] = query_branch_name
+            with open(db_path, 'w') as f:
+                json.dump(lookup, f)
+            return query_branch_name
         else:
             # query branch exists in database
             if db_branch_name == query_branch_name:

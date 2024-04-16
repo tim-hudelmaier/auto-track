@@ -98,15 +98,15 @@ def save_iterable_types(obj: list | dict | tuple, path: Path):
         value_type = value_types.pop()
         if value_type == np.ndarray:
             for idx, value in enumerate(obj):
-                p = _get_nested_obj_dir(path, idx, "item_", ".npy")
+                p = _get_nested_obj_dir(path, str(idx), "item_", ".npy")
                 np.save(p, value)
         elif value_type == pd.DataFrame or value_type == pd.Series:
             for idx, value in enumerate(obj):
-                p = _get_nested_obj_dir(path, idx, "item_", ".csv")
+                p = _get_nested_obj_dir(path, str(idx), "item_", ".csv")
                 value.to_csv(p, index=False)
         elif value_type == torch.Tensor:
             for idx, value in enumerate(obj):
-                p = _get_nested_obj_dir(path, idx, "item_", ".pt")
+                p = _get_nested_obj_dir(path, str(idx), "item_", ".pt")
                 torch.save(value, p)
     else:
         raise ValueError(f"Object type {type(obj)} is currently not supported for automatic saving.")
