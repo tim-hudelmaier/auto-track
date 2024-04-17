@@ -48,7 +48,13 @@ class AutoData:
                 f"Data not found at {data_path}, make sure your root and branch are correct."
             )
 
-        return self._load_data_with_type_inference(data_path)
+        outputs = self._load_from_tuple(data_path)
+
+        if len(outputs) == 1:
+            # retruning single files
+            return outputs[0]
+        else:
+            return outputs
 
     def _resolve_version(self, version: str, available_versions: list[str]) -> str:
         if version == "latest":
@@ -96,18 +102,6 @@ class AutoData:
             tree[major][minor].append(patch)
 
         return tree
-
-    def _load_data_with_type_inference(self, data_path: Path):
-        """
-        Loads data from a file with type inference.
-
-        Args:
-            data_path: Path to the data file
-        """
-        if data_path.is_dir():
-            return self._load_iterable_types(data_path)
-        else:
-            return self._load_object(data_path)
 
     def _load_from_tuple(self, data_path: Path):
         """
@@ -158,10 +152,12 @@ class AutoData:
             outputs = []
             for p in files:
                 outputs.append(self._load_object(p))
-            return sorted(outputs, key=lambda x: int(x.name.split("_")[1]))
+            named_outputs = zip(outputs, [p.stem.split("_")[1] for p in files])
+            sorted_outputs = sorted(named_outputs, key=lambda x: int(x[1]))
+            return [x[0] for x in sorted_outputs]
         else:
             outputs = {}
             for p in files:
-                key = p.name.split("_")[0]
+                key = p.stem.split("_")[0]
                 outputs[key] = self._load_object(p)
             return outputs

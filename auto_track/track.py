@@ -35,7 +35,7 @@ def track(
             path = path / branch_name / version
 
             if isinstance(outputs, tuple):
-                if len(output_names) != len(outputs):
+                if output_names is not None and len(output_names) != len(outputs):
                     raise ValueError(
                         f"Number of output names ({len(output_names)}) must match number of outputs ({len(outputs)})."
                     )
@@ -52,7 +52,7 @@ def track(
                         )
                     save_object(outputs, path / output_names)
                 else:
-                    save_object(output, path / "output")
+                    save_object(outputs, path / "output")
 
             return outputs
 
