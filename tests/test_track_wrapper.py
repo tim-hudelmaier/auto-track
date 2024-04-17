@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
 
-from auto_track.track import track, get_output_path
+from auto_track.track import versioned_auto_save, get_output_path
 
 
 def test_single_output(tmpdir):
-    @track(root=Path(tmpdir), output_names="output")
+    @versioned_auto_save(root=Path(tmpdir), output_names="output")
     def single_output_func():
         return ["single output"]
 
@@ -16,7 +16,7 @@ def test_single_output(tmpdir):
 
 
 def test_multiple_outputs(tmpdir):
-    @track(root=Path(tmpdir), output_names=("output1", "output2"))
+    @versioned_auto_save(root=Path(tmpdir), output_names=("output1", "output2"))
     def multiple_outputs_func():
         return ["output 1"], ["output 2"]
 

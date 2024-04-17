@@ -9,7 +9,7 @@ from loguru import logger
 from auto_track.helpers import save_object
 
 
-def track(
+def versioned_auto_save(
     root, dataset_name: str | None = None, output_names: tuple[str] | str | None = None
 ):
     """

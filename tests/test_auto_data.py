@@ -8,7 +8,7 @@ import torch
 
 from auto_track.auto_data import AutoData
 from auto_track.helpers import save_object
-from auto_track.track import track
+from auto_track.track import versioned_auto_save
 
 
 def test_building_version_tree(tmp_path):
@@ -81,7 +81,7 @@ def test_full_integration(tmp_path):
     pd_1 = pd.DataFrame({"key": ["value"]})
     dict_1 = {"key": "value"}
 
-    @track(root, dataset_name="test")
+    @versioned_auto_save(root, dataset_name="test")
     def save_data():
         return {"array1": np_1, "array2": np_2}, [torch_1, torch_2], pd_1, dict_1
 
@@ -103,7 +103,7 @@ def test_full_integration_single_file(tmp_path):
 
     np_1 = np.array([1, 2, 3])
 
-    @track(root, dataset_name="test")
+    @versioned_auto_save(root, dataset_name="test")
     def save_data():
         return np_1
 
@@ -121,7 +121,7 @@ def test_full_integration_single_iterable(tmp_path):
     np_1 = np.array([1, 2, 3])
     np_2 = np.array([4, 5, 6])
 
-    @track(root, dataset_name="test")
+    @versioned_auto_save(root, dataset_name="test")
     def save_data():
         return [np_1, np_2]
 
@@ -140,7 +140,7 @@ def test_full_integration_single_iterable_dict(tmp_path):
     np_1 = np.array([1, 2, 3])
     np_2 = np.array([4, 5, 6])
 
-    @track(root, dataset_name="test")
+    @versioned_auto_save(root, dataset_name="test")
     def save_data():
         return {"first": np_1, "second": np_2}
 
